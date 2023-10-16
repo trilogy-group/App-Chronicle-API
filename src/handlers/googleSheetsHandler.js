@@ -37,7 +37,11 @@ export const findRowInSheet = async (Name, Subject, CourseName, AppName) => {
         });
 
         const rows = response.data.values;
-        //console.log("Rows ", rows[0]); Debug option
+       
+        /*
+        console.log("Rows ", rows[0]); //Debug option
+        */
+
         if (!rows || rows.length === 0) {
             return null;
         }
