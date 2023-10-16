@@ -1,0 +1,4 @@
+node_modules/
+src/config/credentials.json
+src/config/appchronicleapi-9a80b227d2fa.json
+.env
