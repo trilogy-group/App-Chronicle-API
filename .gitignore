@@ -1,4 +1,4 @@
 node_modules/
-src/config/credentials.json
-src/config/appchronicleapi-9a80b227d2fa.json
-.env
+config/credentials.json
+config/appchronicleapi-9a80b227d2fa.json
+serverless.yml

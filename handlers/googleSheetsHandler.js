@@ -1,15 +1,10 @@
 import { google } from 'googleapis';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const sheets = google.sheets('v4');
 const SPREADSHEET_ID = '1A99BZ7G8YoUp866ueBvWisEHipzg6VBzhTLLv-q_rws';
 const SHEET_NAME = "AppChronicle API Lookup";
 const CLIENT_EMAIL = process.env.CLIENT_EMAIL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/g, '\n');
-
-
 
 // Authenticate and set up the Google Sheets API client.
 const auth = new google.auth.JWT(
@@ -19,19 +14,13 @@ const auth = new google.auth.JWT(
     ['https://www.googleapis.com/auth/spreadsheets']
 );
 
-/**
- * Updates the Google Sheet with new CourseName for a given row.
- * 
- * @param {number} rowIndex 
- * @param {string} newCourseName 
- */
 const updateCourseNameInSheet = async (rowIndex, newCourseName) => {
     try {
         console.log(newCourseName, rowIndex)
         await sheets.spreadsheets.values.update({
             auth,
             spreadsheetId: SPREADSHEET_ID,
-            range: `${SHEET_NAME}!G${rowIndex + 2}`, // Column G is "Course Name", adjusting for 0-based array
+            range: `${SHEET_NAME}!G${rowIndex + 2}`,
             valueInputOption: 'RAW',
             resource: {
                 values: [[newCourseName]]
@@ -43,18 +32,6 @@ const updateCourseNameInSheet = async (rowIndex, newCourseName) => {
     }
 };
 
-
-
-
-/**
- * Finds a row in the Google Sheet based on the provided parameters.
- * 
- * @param {string} Name 
- * @param {string} Subject 
- * @param {string} CourseName 
- * @param {string} AppName 
- * @returns {Object|null} Returns the row as an object if found, otherwise null.
- */
 export const findRowInSheet = async (Name, Subject, CourseName, AppName) => {
     try {
         const response = await sheets.spreadsheets.values.get({
@@ -64,16 +41,11 @@ export const findRowInSheet = async (Name, Subject, CourseName, AppName) => {
         });
 
         const rows = response.data.values;
-       
-        /*
-        console.log("Rows ", rows[0]); //Debug option
-        */
 
         if (!rows || rows.length === 0) {
             return null;
         }
 
-        // Check for matching row.
         for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
             const isPerfectMatch = (
@@ -98,7 +70,7 @@ export const findRowInSheet = async (Name, Subject, CourseName, AppName) => {
                     'Course Name': row[6],
                     'App Name': row[7],
                     'Start': row[8],
-                    'IsItCorrectlyRostered': 1
+                    'WasRosterAdjusted': 0
                 };
                 return formattedRow;
             } else if (isPartialMatch) {
@@ -114,7 +86,7 @@ export const findRowInSheet = async (Name, Subject, CourseName, AppName) => {
                     'Course Name': row[6],
                     'App Name': row[7],
                     'Start': row[8],
-                    'IsItCorrectlyRostered': 0
+                    'WasRosterAdjusted': 1
                 };
                 return formattedRow;
             }
